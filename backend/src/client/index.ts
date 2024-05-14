@@ -1,92 +1,50 @@
 import * as grpc from '@grpc/grpc-js';
 import * as protoLoader from '@grpc/proto-loader';
-import { ProtoGrpcType } from '../proto/recipeStore';
-import path from 'path';
-import express, { Request, Response } from 'express';
-import { RecipeID } from '../proto/recipeStorePackage/RecipeID';
-import { Recipe } from '../proto/recipeStorePackage/Recipe';
+import { RecipeServiceClient } from './generated/recipe_grpc_pb';
+import { Recipe, SearchRequest, AddRecipeRequest } from './generated/recipe_pb';
 
-const PROTO_PATH: string = "../../../proto/recipeStore.proto";
-const PORT: number = 5001;
-const portClient = 3000;
-
-const options = {
+const PROTO_PATH = __dirname + '/../proto/recipe.proto';
+const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
   longs: String,
   enums: String,
   defaults: true,
   oneofs: true,
-};
+});
+const protoDescriptor = grpc.loadPackageDefinition(packageDefinition) as any;
+const recipeService = protoDescriptor.RecipeService;
 
-const protoBuf = protoLoader.loadSync(path.resolve(__dirname, PROTO_PATH), options);
-const grpcObj = grpc.loadPackageDefinition(protoBuf) as unknown as ProtoGrpcType;
-
-const client = new grpcObj.recipeStorePackage.RecipeStoreService(
-  `0.0.0.0:${PORT}`, grpc.credentials.createInsecure()
+const client = new RecipeServiceClient(
+  'localhost:50051',
+  grpc.credentials.createInsecure()
 );
 
-const deadline = new Date();
-deadline.setSeconds(deadline.getSeconds() + 5);
-client.waitForReady(deadline, (err: any) => {
+// Add a new recipe
+const newRecipe = new Recipe();
+newRecipe.setName('Nasi Goreng');
+newRecipe.setDescription('Nasi goreng enak');
+newRecipe.setIngredients('Nasi, Telur, Kecap, Bawang');
+newRecipe.setSteps('1. Tumis bawang. 2. Masukkan telur. 3. Tambahkan nasi dan kecap.');
+
+const addRequest = new AddRecipeRequest();
+addRequest.setRecipe(newRecipe);
+
+client.addRecipe(addRequest, (err, response) => {
   if (err) {
     console.error(err);
     return;
   }
-  onClientReady();
+  console.log(`Added Recipe: ${response.getName()}`);
 });
 
-const onClientReady = () => {
-  console.log(`Server running on port ${PORT} & Client running on port ${portClient}`);
-  const app = express();
-  app.use(express.json());
+// Search for recipes
+const searchRequest = new SearchRequest();
+searchRequest.setKeyword('Goreng');
 
-  app.get('/recipes', (req: Request, res: Response) => {
-    client.GetAllRecipes({}, (err: any, _res: any) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      res.send(_res);
-    });
-  });
-
-  app.post('/recipes', (req: Request, res: Response) => {
-    const createInput: Recipe = req.body;
-    const recipe: Recipe = createInput;
-    client.AddRecipe(recipe, (err: any, _res: any) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      res.send(_res);
-    });
-  });
-
-  app.put('/recipes/:id', (req: Request, res: Response) => {
-    const recipeID: RecipeID = { id: req.params.id };
-    const updatedRecipe: Recipe = req.body;
-    const recipeWithID: RecipeWithID = { recipeId: recipeID, recipe: updatedRecipe };
-    client.UpdateRecipe(recipeWithID, (err: any, _res: any) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      res.send(_res);
-    });
-  });
-
-  app.delete('/recipes/:id', (req: Request, res: Response) => {
-    const recipeID: RecipeID = { id: req.params.id };
-    client.DeleteRecipe(recipeID, (err: any, _res: any) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      res.send(_res);
-    });
-  });
-
-  app.listen(portClient, () => {
-    console.log("Express is started");
-  });
-};
+const call = client.searchRecipe(searchRequest);
+call.on('data', (recipe: Recipe) => {
+  console.log(`Found Recipe: ${recipe.getName()} - ${recipe.getDescription()}`);
+});
+call.on('end', () => {
+  console.log('Search completed.');
+});

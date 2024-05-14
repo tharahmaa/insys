@@ -1,38 +1,21 @@
 syntax = "proto3";
 
-package bookStorePackage;
-
-service BookStoreService {
-  rpc GetAllBooks (Empty) returns (Books) {};
-  rpc GetBookByID (BookID) returns (Book) {};
-  rpc AddBook (Book) returns (Response) {};
-  rpc UpdateBook (BookWithID) returns (Response) {};
-  rpc DeleteBook (BookID) returns (Response) {};
+message Recipe {
+  string name = 1;
+  string description = 2;
+  string ingredients = 3;
+  string steps = 4;
 }
 
-message Book {
-  string title = 1;
-  string author = 2;
-  string description = 3;
-  float price = 4;
-  int32 disc = 5;
+message SearchRequest {
+  string keyword = 1;
 }
 
-message BookID {
-  string id = 1;
+message AddRecipeRequest {
+  Recipe recipe = 1;
 }
 
-message Books {
-  repeated Book books = 1;
+service RecipeService {
+  rpc SearchRecipe (SearchRequest) returns (stream Recipe);
+  rpc AddRecipe (AddRecipeRequest) returns (Recipe);
 }
-
-message BookWithID {
-  BookID bookId = 1;
-  Book book = 2;
-}
-
-message Response {
-  string responseMsg = 1;
-}
-
-message Empty {}
