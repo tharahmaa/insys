@@ -1,0 +1,24 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run build && node build/index.js",
+    "start:server": "nodemon ./src/server/index.ts",
+    "start:client": "nodemon ./src/client/index.ts",
+    "proto:gen": "./proto.gen.sh"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "nodemon": "^2.0.22"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.8.13",
+    "@grpc/proto-loader": "^0.7.6"
+  }
+}

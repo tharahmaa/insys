@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resep Masakan</title>
+    <link rel="icon" href="icon.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('background.jpg');
+            background-size: cover; 
+            background-repeat: no-repeat; 
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+        } 
+        .recipe {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        p {
+            margin-top: 5px;
+        }
+        ul, ol {
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            margin-bottom: 5px;
+        }
+        .form-group input[type="text"],
+        .form-group textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 16px;
+        }
+
+        /* Responsiveness */
+        @media only screen and (max-width: 600px) {
+            .container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Resep Masakan</h1>
+    </header>
+    <div class="container">
+        <!-- Form untuk pencarian -->
+        <form action="#" method="GET">
+            <h2>Cari Resep</h2>
+            <div class="form-group">
+                <label for="keyword">Kata Kunci:</label>
+                <input type="text" id="keyword" name="keyword">
+            </div>
+            <input type="submit" value="Cari">
+        </form>
+    </div>
+    <div class="container">
+        <!-- Form untuk menambah resep baru -->
+        <form action="/api/tambah-resep" method="POST">
+            <h2>Tambah Resep Baru</h2>
+            <div class="form-group">
+                <label for="nama-resep">Nama Resep:</label>
+                <input type="text" id="nama-resep" name="nama-resep" required>
+            </div>
+            <div class="form-group">
+                <label for="deskripsi">Deskripsi:</label>
+                <textarea id="deskripsi" name="deskripsi" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="bahan">Bahan:</label>
+                <textarea id="bahan" name="bahan" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="langkah">Langkah Pembuatan:</label>
+                <textarea id="langkah" name="langkah" required></textarea>
+            </div>
+            <input type="submit" value="Tambah Resep">
+        </form>
+    </div>
+</body>
+</html>
